@@ -1,7 +1,11 @@
 FROM ubuntu:latest
 
-# 安装 Python（用于启动简单的 HTTP 服务）
-RUN apt-get update && apt-get install -y python3 && rm -rf /var/lib/apt/lists/*
+# 安装 Python 和 JupyterLab
+RUN apt-get update && apt-get install -y python3 python3-pip && \
+    pip3 install jupyterlab && \
+    ln -s /usr/bin/python3 /usr/bin/python
 
-# 持续运行一个简单的 Web 服务
-CMD ["python3", "-m", "http.server", "8080"]
+WORKDIR /workspace
+
+# 启动 JupyterLab（无密码、无 token，方便访问）
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8080", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--NotebookApp.password=''"]
